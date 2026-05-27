@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Web Rings — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:900px;margin:0 auto;padding:1.5rem 1rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+    <h1 style="color:#ffff00;font-family:'Courier New',monospace;">🔗 WEB RINGS</h1>
+    {% if current_user.is_authenticated and current_user.site and current_user.site.status == 'approved' %}
+    <a href="{{ url_for('sites.create_webring') }}" class="gz-btn">+ CREATE RING</a>
+    {% endif %}
+  </div>
+  {% if rings %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+    {% for ring in rings %}
+    <div class="gz-card">
+      <div style="color:#ffff00;font-weight:bold;margin-bottom:0.4rem;">{{ ring.name }}</div>
+      {% if ring.description %}<div style="color:#aaaacc;font-size:0.78rem;margin-bottom:0.5rem;">{{ ring.description }}</div>{% endif %}
+      <div style="color:#aaaacc;font-size:0.75rem;margin-bottom:0.75rem;">
+        {{ ring.member_count }} sites
+        {% if ring.neighborhood %} · {{ ring.neighborhood }}{% endif %}
+      </div>
+      {% if current_user.is_authenticated and current_user.site and current_user.site.status == 'approved' %}
+      {% set already_member = current_user.site.id in ring.members|map(attribute='site_id')|list %}
+      {% if not already_member %}
+      <form method="POST" action="{{ url_for('sites.join_webring', ring_slug=ring.slug) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="gz-btn-ghost" style="font-size:0.78rem;">JOIN RING</button>
+      </form>
+      {% else %}
+      <span style="color:#00ff00;font-size:0.78rem;">✓ Member</span>
+      {% endif %}
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="gz-card" style="text-align:center;">
+    <p style="color:#aaaacc;margin-bottom:1rem;">No web rings yet.</p>
+    {% if current_user.is_authenticated and current_user.site and current_user.site.status == 'approved' %}
+    <a href="{{ url_for('sites.create_webring') }}" class="gz-btn">CREATE THE FIRST WEB RING</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

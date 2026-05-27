@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Neighborhoods — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:1.5rem;">🗺️ NEIGHBORHOODS</h1>
+  <div class="gz-hood-grid">
+    {% for hood in neighborhoods %}
+    <a href="{{ url_for('main.neighborhood', neighborhood=hood.slug) }}" class="gz-hood-card">
+      <span class="gz-hood-icon">{{ hood.icon }}</span>
+      <div class="gz-hood-name">{{ hood.name }}</div>
+      <div class="gz-hood-desc">{{ hood.desc }}</div>
+      <div class="gz-hood-count">{{ counts.get(hood.slug, 0) }} sites</div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

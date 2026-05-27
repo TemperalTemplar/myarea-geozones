@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Site Settings — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:600px;margin:2rem auto;padding:0 1rem;">
+  <div class="gz-card">
+    <div class="gz-card-title">⚙️ SITE SETTINGS</div>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="gz-form-group">
+        <label class="gz-label">Site Title</label>
+        <input type="text" name="title" class="gz-input" value="{{ site.title }}" required maxlength="128">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Description</label>
+        <textarea name="description" class="gz-input" rows="3" maxlength="500">{{ site.description or '' }}</textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+        <div class="gz-form-group">
+          <label class="gz-label">Background Color</label>
+          <input type="color" name="bg_color" value="{{ site.bg_color }}" style="width:100%;height:36px;background:transparent;border:1px solid #6666cc;cursor:pointer;">
+        </div>
+        <div class="gz-form-group">
+          <label class="gz-label">Text Color</label>
+          <input type="color" name="text_color" value="{{ site.text_color }}" style="width:100%;height:36px;background:transparent;border:1px solid #6666cc;cursor:pointer;">
+        </div>
+        <div class="gz-form-group">
+          <label class="gz-label">Link Color</label>
+          <input type="color" name="link_color" value="{{ site.link_color }}" style="width:100%;height:36px;background:transparent;border:1px solid #6666cc;cursor:pointer;">
+        </div>
+      </div>
+      <div class="gz-form-group">
+        <label style="color:#aaaacc;font-size:0.82rem;display:flex;align-items:center;gap:0.5rem;">
+          <input type="checkbox" name="under_construction" {{ 'checked' if site.under_construction else '' }}>
+          Show "Under Construction" banner
+        </label>
+      </div>
+      <button type="submit" class="gz-btn" style="width:100%;text-align:center;">SAVE SETTINGS</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

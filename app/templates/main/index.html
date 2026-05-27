@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}GeoZones — Your Corner of the Internet{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem;">
+
+  <!-- Hero -->
+  <div style="text-align:center;padding:2rem 0 1.5rem;">
+    <div style="font-size:3.5rem;font-family:'Courier New',monospace;color:#ffff00;text-shadow:0 0 20px #ffff00;letter-spacing:4px;">
+      GEO<span style="color:#00ffff;">ZONES</span>
+    </div>
+    <div style="color:#aaaacc;margin:0.5rem 0;">Your free corner of the internet — {{ total }} sites and growing</div>
+    {% if not current_user.is_authenticated %}
+    <div style="margin-top:1rem;">
+      <a href="{{ url_for('auth.register') }}" class="gz-btn" style="font-size:1rem;padding:0.5rem 2rem;">
+        ★ GET YOUR FREE SITE ★
+      </a>
+      &nbsp;
+      <a href="{{ url_for('auth.login') }}" class="gz-btn-ghost">Login</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Neighborhoods quick links -->
+  <div class="gz-card" style="margin-bottom:1.5rem;">
+    <div class="gz-card-title">🗺️ Neighborhoods</div>
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+      {% for hood in neighborhoods %}
+      <a href="{{ url_for('main.neighborhood', neighborhood=hood.slug) }}"
+         style="background:rgba(0,0,102,0.8);border:1px solid #6666cc;padding:0.3rem 0.75rem;
+                color:#00ffff;text-decoration:none;font-size:0.82rem;">
+        {{ hood.icon }} {{ hood.name }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+    <!-- Most visited -->
+    <div class="gz-card">
+      <div class="gz-card-title">🔥 Most Visited</div>
+      <div class="gz-site-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));">
+        {% for site in featured %}
+        <div class="gz-site-card">
+          <a href="{{ site.url_path }}">{{ site.title }}</a>
+          <div class="gz-site-meta">{{ site.neighborhood }}</div>
+          <div class="gz-hit-count">👁 {{ site.hit_count }} visits</div>
+        </div>
+        {% else %}
+        <p style="color:#aaaacc;font-size:0.82rem;">No sites yet. Be the first!</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Newest sites -->
+    <div class="gz-card">
+      <div class="gz-card-title">✨ Newest Sites</div>
+      <div class="gz-site-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));">
+        {% for site in newest %}
+        <div class="gz-site-card">
+          <a href="{{ site.url_path }}">{{ site.title }}</a>
+          <div class="gz-site-meta">{{ site.neighborhood }}</div>
+          <div class="gz-site-meta">{{ site.created_at.strftime('%b %d, %Y') }}</div>
+        </div>
+        {% else %}
+        <p style="color:#aaaacc;font-size:0.82rem;">No sites yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Get started box -->
+  <div class="gz-card" style="margin-top:1.5rem;text-align:center;">
+    <div class="gz-card-title">🌟 How It Works</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;">
+      {% for step, desc in [('1. Register','Create your free account'),('2. Apply','Choose your neighborhood'),('3. Get Approved','Admin reviews your application'),('4. Build!','Use our HTML editor to create your site')] %}
+      <div>
+        <div style="color:#ffff00;font-weight:bold;">{{ step }}</div>
+        <div style="color:#aaaacc;font-size:0.78rem;margin-top:0.25rem;">{{ desc }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

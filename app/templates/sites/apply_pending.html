@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Application Pending{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:3rem auto;padding:0 1rem;text-align:center;">
+  <div class="gz-card">
+    <div style="font-size:3rem;margin-bottom:1rem;">⏳</div>
+    <div class="gz-card-title">Application Pending</div>
+    <p style="color:#aaaacc;margin-bottom:1rem;">
+      Your application for <span style="color:#ffff00;">{{ application.site_name }}</span> in
+      <span style="color:#00ffff;">{{ application.neighborhood }}</span> is being reviewed.
+    </p>
+    <p style="color:#aaaacc;font-size:0.78rem;">Submitted {{ application.created_at.strftime('%B %d, %Y') }}</p>
+  </div>
+</div>
+{% endblock %}

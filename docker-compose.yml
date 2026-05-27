@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: geozones_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-geozones}
+      POSTGRES_USER:     ${POSTGRES_USER:-geozones}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-geozones}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - geozones_net
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: geozones_web
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-geozones}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-geozones}
+      - SECRET_KEY=${SECRET_KEY:-change-me}
+      - UPLOAD_FOLDER=/app/uploads
+      - MAX_STORAGE_MB=${MAX_STORAGE_MB:-150}
+      - SERVICE_API_KEY=${SERVICE_API_KEY:-}
+      - SOCIAL_APP_URL=${SOCIAL_APP_URL:-https://myarea.wrds361.com}
+      - MYAREA_API_URL=${MYAREA_API_URL:-http://myarea_social_web:5000}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET:-}
+      - OIDC_DISCOVERY_URL=${OIDC_DISCOVERY_URL:-}
+      - OIDC_REDIRECT_URI=${OIDC_REDIRECT_URI:-}
+      - PREFERRED_URL_SCHEME=${PREFERRED_URL_SCHEME:-https}
+    volumes:
+      - ./app:/app/app
+      - uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - geozones_net
+      - myarea_shared_net
+    expose:
+      - "5000"
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: geozones_nginx
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8919}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - uploads:/app/uploads:ro
+    depends_on:
+      - web
+    networks:
+      - geozones_net
+
+volumes:
+  postgres_data:
+  uploads:
+
+networks:
+  geozones_net:
+    driver: bridge
+  myarea_shared_net:
+    external: true
+    name: myarea_shared_net

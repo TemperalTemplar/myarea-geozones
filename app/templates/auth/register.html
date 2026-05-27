@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Join GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:450px;margin:3rem auto;padding:0 1rem;">
+  <div class="gz-card">
+    <div class="gz-card-title">🌟 Join GeoZones — Get Your Free Site!</div>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="gz-form-group">
+        <label class="gz-label">Username</label>
+        <input type="text" name="username" class="gz-input" value="{{ username|default('') }}" required minlength="3" maxlength="32">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Email</label>
+        <input type="email" name="email" class="gz-input" value="{{ email|default('') }}" required>
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Password (min 8 chars)</label>
+        <input type="password" name="password" class="gz-input" required minlength="8">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Confirm Password</label>
+        <input type="password" name="password2" class="gz-input" required>
+      </div>
+      <button type="submit" class="gz-btn" style="width:100%;text-align:center;">CREATE ACCOUNT</button>
+    </form>
+    <div style="text-align:center;margin-top:1rem;font-size:0.78rem;color:#aaaacc;">
+      Already a member? <a href="{{ url_for('auth.login') }}" style="color:#00ffff;">Login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

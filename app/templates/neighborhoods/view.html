@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ hood.name }} — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem;">
+  <div style="margin-bottom:1.5rem;">
+    <span style="font-size:2.5rem;">{{ hood.icon }}</span>
+    <h1 style="color:#ffff00;font-family:'Courier New',monospace;display:inline;margin-left:0.5rem;">{{ hood.name|upper }}</h1>
+    <div style="color:#aaaacc;font-size:0.82rem;margin-top:0.25rem;">{{ hood.desc }}</div>
+  </div>
+  <div class="gz-site-grid">
+    {% for site in sites.items %}
+    <div class="gz-site-card">
+      {% if site.under_construction %}
+      <div style="font-size:0.65rem;color:#ffff00;margin-bottom:0.3rem;">🚧 Under Construction</div>
+      {% endif %}
+      <a href="{{ site.url_path }}">{{ site.title }}</a>
+      <div class="gz-site-meta">by {{ site.owner.username }}</div>
+      <div class="gz-hit-count">👁 {{ site.hit_count }}</div>
+      <div style="margin-top:0.4rem;display:flex;justify-content:space-between;align-items:center;">
+        <a href="{{ url_for('sites.guestbook', site_name=site.name) }}" style="color:#aaaacc;font-size:0.7rem;">📖 Guestbook</a>
+        {% if current_user.is_authenticated and current_user.site and site.user_id != current_user.id %}
+        <form method="POST" action="{{ url_for('social.follow', site_id=site.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" style="background:none;border:1px solid #6666cc;color:#00ffff;font-size:0.65rem;padding:0.1rem 0.3rem;cursor:pointer;">
+            + Follow
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <p style="color:#aaaacc;">No sites in this neighborhood yet.</p>
+    {% endfor %}
+  </div>
+  {% if sites.pages > 1 %}
+  <div style="text-align:center;margin-top:1.5rem;display:flex;gap:0.5rem;justify-content:center;">
+    {% if sites.has_prev %}<a href="?page={{ sites.prev_num }}" class="gz-btn-ghost">← Prev</a>{% endif %}
+    <span style="color:#aaaacc;padding:0.3rem 0.6rem;">{{ sites.page }}/{{ sites.pages }}</span>
+    {% if sites.has_next %}<a href="?page={{ sites.next_num }}" class="gz-btn-ghost">Next →</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

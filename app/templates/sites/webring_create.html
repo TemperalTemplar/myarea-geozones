@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Create Web Ring{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:2rem auto;padding:0 1rem;">
+  <div class="gz-card">
+    <div class="gz-card-title">🔗 CREATE WEB RING</div>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="gz-form-group">
+        <label class="gz-label">Ring Name *</label>
+        <input type="text" name="name" class="gz-input" required maxlength="128">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Description</label>
+        <textarea name="description" class="gz-input" rows="3"></textarea>
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Neighborhood (optional)</label>
+        <select name="neighborhood" class="gz-input">
+          <option value="">Any neighborhood</option>
+          {% for hood in neighborhoods %}
+          <option value="{{ hood.slug }}">{{ hood.icon }} {{ hood.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="gz-btn" style="width:100%;text-align:center;">CREATE RING</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

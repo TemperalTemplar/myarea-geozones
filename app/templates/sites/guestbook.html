@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ site.title }} Guestbook{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:0.5rem;">📖 GUESTBOOK</h1>
+  <div style="color:#aaaacc;margin-bottom:1.5rem;">
+    <a href="{{ site.url_path }}" style="color:#00ffff;">{{ site.title }}</a>
+    by {{ site.owner.username }}
+  </div>
+
+
+  <!-- Follow and Like buttons -->
+  {% if current_user.is_authenticated and site.user_id != current_user.id %}
+  <div class="gz-card" style="margin-bottom:1.5rem;display:flex;gap:1rem;align-items:center;">
+    <form method="POST" action="/social/follow/{{ site.id }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="gz-btn">+ Follow Site</button>
+    </form>
+    <button onclick="likesite({{ site.id }})" class="gz-btn-ghost" id="like-btn">
+      ❤️ Like
+    </button>
+    <span id="like-count" style="color:#aaaacc;font-size:0.82rem;"></span>
+  </div>
+  <script>
+  function likesite(id) {
+    fetch('/social/like/' + id, {
+      method: 'POST',
+      headers: {'X-CSRFToken': '{{ csrf_token() }}', 'Content-Type': 'application/json'}
+    }).then(r => r.json()).then(d => {
+      document.getElementById('like-btn').textContent = d.liked ? '❤️ Liked' : '❤️ Like';
+      document.getElementById('like-count').textContent = d.count + ' likes';
+    });
+  }
+  </script>
+  {% endif %}
+  <!-- Sign form -->
+  <div class="gz-card" style="margin-bottom:1.5rem;">
+    <div class="gz-card-title">✍️ Sign the Guestbook</div>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="gz-form-group">
+        <label class="gz-label">Your Name *</label>
+        <input type="text" name="name" class="gz-input" required maxlength="64">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Your Website URL</label>
+        <input type="url" name="url" class="gz-input" maxlength="256" placeholder="https://...">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Message *</label>
+        <textarea name="message" class="gz-input" rows="4" required maxlength="1000"></textarea>
+      </div>
+      <button type="submit" class="gz-btn">SIGN GUESTBOOK</button>
+    </form>
+  </div>
+
+  <!-- Entries -->
+  {% for entry in entries %}
+  <div class="gz-guestbook-entry">
+    <div class="gz-guestbook-author">
+      {% if entry.author_url %}
+      <a href="{{ entry.author_url }}" target="_blank" style="color:#ffff00;">{{ entry.author_name }}</a>
+      {% else %}
+      {{ entry.author_name }}
+      {% endif %}
+    </div>
+    <div class="gz-guestbook-date">{{ entry.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+    <div style="margin-top:0.4rem;color:#ccccff;">{{ entry.message }}</div>
+    {% if current_user.is_authenticated and (current_user.id == site.user_id or current_user.is_admin) %}
+    <form method="POST" action="{{ url_for('sites.delete_guestbook_entry', entry_id=entry.id) }}" style="display:inline;margin-top:0.25rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" style="background:none;border:none;color:#ff6666;font-size:0.72rem;cursor:pointer;"
+        onclick="return confirm('Delete this entry?')">🗑 Delete</button>
+    </form>
+    {% endif %}
+  </div>
+  {% else %}
+  <p style="color:#aaaacc;">No entries yet. Be the first to sign!</p>
+  {% endfor %}
+</div>
+{% endblock %}

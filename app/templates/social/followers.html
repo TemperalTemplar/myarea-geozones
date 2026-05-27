@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Followers — {{ site.title }}{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:0.5rem;">👥 FOLLOWERS</h1>
+  <div style="color:#aaaacc;margin-bottom:1.5rem;"><a href="{{ site.url_path }}" style="color:#00ffff;">{{ site.title }}</a> has {{ follows|length }} followers</div>
+  {% for follow in follows %}
+  <div class="gz-card" style="margin-bottom:0.5rem;display:flex;align-items:center;gap:1rem;">
+    <div style="color:#ffff00;font-family:'Courier New',monospace;">{{ follow.user.username }}</div>
+    {% if follow.user.site %}
+    <a href="{{ follow.user.site.url_path }}" style="color:#00ffff;font-size:0.78rem;margin-left:auto;">Visit their site →</a>
+    {% endif %}
+    <div style="color:#aaaacc;font-size:0.72rem;">{{ follow.created_at.strftime('%b %d, %Y') }}</div>
+  </div>
+  {% else %}
+  <div class="gz-card" style="text-align:center;padding:2rem;">
+    <div style="color:#aaaacc;">No followers yet.</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}GeoZones{% endblock %}</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/geozones.css') }}" rel="stylesheet">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<nav class="gz-nav">
+  <div class="gz-nav-inner">
+    <a href="{{ url_for('main.index') }}" class="gz-logo">GEO<span>ZONES</span></a>
+    <div class="gz-nav-links">
+      <a href="{{ url_for('main.neighborhoods') }}" class="gz-nav-link"><i class="bi bi-map"></i> Neighborhoods</a>
+      <a href="{{ url_for('sites.webrings') }}" class="gz-nav-link"><i class="bi bi-link-45deg"></i> Web Rings</a>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('social.feed') }}" class="gz-nav-link"><i class="bi bi-rss"></i> Feed</a>
+      <a href="{{ url_for('social.following') }}" class="gz-nav-link"><i class="bi bi-bookmark-heart"></i> Following</a>
+      {% endif %}
+      <a href="{{ url_for('main.search') }}" class="gz-nav-link"><i class="bi bi-search"></i> Search</a>
+      {% if current_user.is_authenticated %}
+        {% if current_user.site and current_user.site.status == 'approved' %}
+        <a href="{{ url_for('editor.index') }}" class="gz-nav-link"><i class="bi bi-code-slash"></i> Editor</a>
+        {% endif %}
+        <a href="{{ url_for('sites.dashboard') }}" class="gz-nav-link"><i class="bi bi-house-fill"></i> My Site</a>
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.index') }}" class="gz-nav-link" style="color:var(--gz-orange)"><i class="bi bi-shield-fill"></i> Admin</a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="gz-nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="gz-nav-link"><i class="bi bi-door-open"></i> Login</a>
+        <a href="{{ url_for('auth.register') }}" class="gz-nav-link" style="color:var(--gz-yellow)"><i class="bi bi-person-plus"></i> Join</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div style="max-width:1100px;margin:0.5rem auto;padding:0 1rem;">
+  {% for cat, msg in messages %}
+  <div class="gz-alert gz-alert-{{ cat }}">{{ msg }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<main class="gz-main">{% block content %}{% endblock %}</main>
+
+<div class="gz-marquee-strip">
+  <marquee>✦ Welcome to GeoZones — Your corner of the internet ✦ &nbsp;&nbsp;&nbsp; Build your site today! &nbsp;&nbsp;&nbsp; ✦ Explore neighborhoods ✦ Sign guestbooks ✦ Join web rings ✦</marquee>
+</div>
+
+<footer class="gz-footer">
+  <a href="{{ url_for('main.index') }}">GeoZones</a> &nbsp;|&nbsp;
+  <a href="{{ url_for('main.neighborhoods') }}">Neighborhoods</a> &nbsp;|&nbsp;
+  <a href="{{ url_for('sites.webrings') }}">Web Rings</a> &nbsp;|&nbsp;
+  <a href="{{ url_for('auth.register') }}">Get Your Free Site</a>
+  &nbsp;&nbsp; &copy; {{ now.year }} GeoZones — Part of the <a href="{{ config.SOCIAL_APP_URL }}">MyArea</a> platform
+</footer>
+</body>
+</html>

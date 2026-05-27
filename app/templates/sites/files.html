@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}File Manager — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:900px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:1rem;">📁 FILE MANAGER</h1>
+
+  <!-- Upload -->
+  <div class="gz-card" style="margin-bottom:1rem;">
+    <div class="gz-card-title">⬆️ Upload File</div>
+    <form method="POST" action="{{ url_for('sites.upload_file') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:flex;gap:0.5rem;align-items:center;">
+        <input type="file" name="file" class="gz-input" style="flex:1;">
+        <button type="submit" class="gz-btn">UPLOAD</button>
+      </div>
+    </form>
+    <div style="color:#aaaacc;font-size:0.75rem;margin-top:0.5rem;">
+      Allowed: HTML, CSS, JS, images, audio (MP3/MIDI), video, PDF. Max {{ config.MAX_STORAGE_MB }}MB total.
+    </div>
+  </div>
+
+  <!-- Files -->
+  <div class="gz-card">
+    <div class="gz-card-title">📄 Your Files ({{ site.storage_mb }}MB / {{ config.MAX_STORAGE_MB }}MB used)</div>
+    {% if site.files %}
+    <table class="gz-table">
+      <thead><tr><th>Filename</th><th>Size</th><th>Type</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for f in site.files %}
+        <tr>
+          <td>
+            <a href="{{ url_for('editor.index', file=f.filename) }}" style="color:#00ffff;">{{ f.filename }}</a>
+            {% if f.is_index %}<span style="color:#ffff00;font-size:0.7rem;"> [INDEX]</span>{% endif %}
+          </td>
+          <td style="color:#aaaacc;">{{ (f.size_bytes/1024)|round(1) }} KB</td>
+          <td style="color:#aaaacc;font-size:0.75rem;">{{ f.mime_type or '—' }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('sites.delete_file', file_id=f.id) }}" style="display:inline;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="gz-btn-danger" style="padding:0.1rem 0.4rem;font-size:0.72rem;"
+                onclick="return confirm('Delete {{ f.filename }}?')">DEL</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:#aaaacc;">No files yet. Upload your first file or use the editor to create index.html.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

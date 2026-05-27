@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}My Feed — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:1000px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:1.5rem;">📡 MY FEED</h1>
+
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;">
+
+    <!-- Feed -->
+    <div>
+      {% if updates %}
+        {% for update in updates %}
+        <div class="gz-card" style="margin-bottom:0.75rem;display:flex;align-items:center;gap:1rem;">
+          <div style="font-size:1.5rem;">🌐</div>
+          <div style="flex:1;">
+            <a href="{{ update.site.url_path }}" style="color:#ffff00;font-weight:bold;">{{ update.site.title }}</a>
+            <span style="color:#aaaacc;"> — {{ update.message }}</span>
+            <div style="color:#aaaacc;font-size:0.72rem;margin-top:0.2rem;">{{ update.created_at.strftime('%B %d at %I:%M %p') }}</div>
+          </div>
+          <a href="{{ update.site.url_path }}" class="gz-btn-ghost" style="font-size:0.75rem;">VISIT</a>
+        </div>
+        {% endfor %}
+      {% else %}
+      <div class="gz-card" style="text-align:center;padding:2rem;">
+        <div style="font-size:2rem;margin-bottom:0.75rem;">📭</div>
+        <div style="color:#aaaacc;margin-bottom:1rem;">Your feed is empty. Follow some sites to see their updates here.</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      {% if current_user.site and current_user.site.status == 'approved' %}
+      <div class="gz-card" style="margin-bottom:1rem;">
+        <div class="gz-card-title">📊 MY SITE</div>
+        <div style="font-size:0.82rem;">
+          <div style="color:#ffff00;font-weight:bold;margin-bottom:0.4rem;">{{ current_user.site.title }}</div>
+          <div style="color:#aaaacc;margin-bottom:0.4rem;">👁 {{ current_user.site.hit_count }} visits</div>
+          <div style="color:#aaaacc;margin-bottom:0.75rem;">
+            ❤️ {{ current_user.site.likes|length if current_user.site.likes is defined else 0 }} likes
+          </div>
+          <a href="{{ url_for('social.followers', site_name=current_user.site.name) }}" style="color:#00ffff;font-size:0.78rem;">
+            See followers →
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if suggested %}
+      <div class="gz-card">
+        <div class="gz-card-title">✨ SUGGESTED SITES</div>
+        {% for site in suggested %}
+        <div style="border-bottom:1px solid #333;padding:0.5rem 0;font-size:0.82rem;">
+          <a href="{{ site.url_path }}" style="color:#ffff00;">{{ site.title }}</a>
+          <div style="color:#aaaacc;font-size:0.72rem;">{{ site.neighborhood }} · {{ site.hit_count }} visits</div>
+          <form method="POST" action="{{ url_for('social.follow', site_id=site.id) }}" style="margin-top:0.3rem;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="gz-btn-ghost" style="font-size:0.7rem;padding:0.1rem 0.4rem;">
+              {{ '✓ Following' if site.id in followed_site_ids else '+ Follow' }}
+            </button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Apply for a Site — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:600px;margin:2rem auto;padding:0 1rem;">
+  <div class="gz-card">
+    <div class="gz-card-title">📝 Apply for Your GeoZones Site</div>
+    <p style="color:#aaaacc;font-size:0.82rem;margin-bottom:1rem;">
+      Tell us about your site. An admin will review your application and approve it.
+    </p>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="gz-form-group">
+        <label class="gz-label">Site Name * <span style="color:#aaaacc;font-size:0.75rem;">(your URL: /neighborhood/sitename/)</span></label>
+        <input type="text" name="site_name" class="gz-input" value="{{ form.get('site_name','') }}" required minlength="2" maxlength="32" placeholder="mycoolsite">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Site Title *</label>
+        <input type="text" name="site_title" class="gz-input" value="{{ form.get('site_title','') }}" required maxlength="128" placeholder="My Awesome Homepage">
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Neighborhood *</label>
+        <select name="neighborhood" class="gz-input">
+          <option value="">-- Select a neighborhood --</option>
+          {% for hood in neighborhoods %}
+          <option value="{{ hood.slug }}" {{ 'selected' if form.get('neighborhood') == hood.slug else '' }}>
+            {{ hood.icon }} {{ hood.name }} — {{ hood.desc }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Site Description</label>
+        <textarea name="description" class="gz-input" rows="3" maxlength="500">{{ form.get('description','') }}</textarea>
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Why do you want a GeoZones site? *</label>
+        <textarea name="reason" class="gz-input" rows="4" maxlength="1000" required placeholder="Tell us what you plan to put on your site...">{{ form.get('reason','') }}</textarea>
+      </div>
+      <button type="submit" class="gz-btn" style="width:100%;text-align:center;">SUBMIT APPLICATION</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

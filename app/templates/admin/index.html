@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Admin — GeoZones{% endblock %}
+{% block content %}
+<div style="display:grid;grid-template-columns:180px 1fr;gap:1rem;max-width:1100px;margin:0 auto;padding:1.5rem 1rem;">
+  <div class="gz-card gz-admin-sidebar">
+    <div style="color:#ffff00;font-size:0.8rem;padding:0.3rem 0.75rem;border-bottom:1px solid #333;margin-bottom:0.5rem;font-family:'Courier New',monospace;">ADMIN</div>
+    <a href="{{ url_for('admin.index') }}">📊 Dashboard</a>
+    <a href="{{ url_for('admin.applications') }}">📝 Applications</a>
+    <a href="{{ url_for('admin.sites') }}">🌐 Sites</a>
+    <a href="{{ url_for('admin.users') }}">👥 Users</a>
+  </div>
+  <div>
+    <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:1rem;">ADMIN DASHBOARD</h1>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;">
+      {% for label, val, color in [('Users', stats.users, '#00ffff'),('Live Sites', stats.sites, '#00ff00'),('Pending', stats.pending, '#ffff00'),('Total Sites', stats.total_sites, '#aaaacc')] %}
+      <div class="gz-card" style="text-align:center;">
+        <div style="font-size:1.8rem;color:{{ color }};font-family:'Courier New',monospace;">{{ val }}</div>
+        <div style="color:#aaaacc;font-size:0.75rem;">{{ label }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if pending %}
+    <div class="gz-card">
+      <div class="gz-card-title">⏳ PENDING APPLICATIONS ({{ pending|length }})</div>
+      <table class="gz-table">
+        <thead><tr><th>User</th><th>Site Name</th><th>Neighborhood</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+          {% for app in pending %}
+          <tr>
+            <td style="color:#00ffff;">{{ app.user.username }}</td>
+            <td style="color:#ffff00;">{{ app.site_name }}</td>
+            <td>{{ app.neighborhood }}</td>
+            <td style="color:#aaaacc;font-size:0.75rem;">{{ app.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+              <a href="{{ url_for('admin.applications') }}" class="gz-btn-ghost" style="font-size:0.75rem;">REVIEW</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="gz-alert gz-alert-success">✓ No pending applications.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

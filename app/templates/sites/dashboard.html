@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}My Site — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:900px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:1.5rem;">MY SITE</h1>
+
+  {% if not current_user.site %}
+  <div class="gz-card" style="text-align:center;">
+    <p style="color:#aaaacc;margin-bottom:1rem;">You don't have a site yet.</p>
+    <a href="{{ url_for('sites.apply') }}" class="gz-btn">APPLY FOR A SITE</a>
+  </div>
+  {% else %}
+  {% set site = current_user.site %}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+    <div class="gz-card">
+      <div class="gz-card-title">📊 Site Info</div>
+      <div style="font-size:0.82rem;">
+        <div style="margin-bottom:0.5rem;"><span style="color:#aaaacc;">Title:</span> <span style="color:#ffff00;">{{ site.title }}</span></div>
+        <div style="margin-bottom:0.5rem;"><span style="color:#aaaacc;">URL:</span> <a href="{{ site.url_path }}" style="color:#00ffff;">{{ site.url_path }}</a></div>
+        <div style="margin-bottom:0.5rem;"><span style="color:#aaaacc;">Neighborhood:</span> {{ site.neighborhood }}</div>
+        <div style="margin-bottom:0.5rem;"><span style="color:#aaaacc;">Status:</span> <span class="gz-badge gz-badge-{{ site.status }}">{{ site.status|upper }}</span></div>
+        <div style="margin-bottom:0.5rem;"><span style="color:#aaaacc;">Hits:</span> <span style="color:#00ff00;">{{ site.hit_count }}</span></div>
+      </div>
+    </div>
+    <div class="gz-card">
+      <div class="gz-card-title">💾 Storage</div>
+      <div style="font-size:0.82rem;margin-bottom:0.75rem;">
+        {{ site.storage_mb }} MB used of {{ config.MAX_STORAGE_MB }} MB
+      </div>
+      <div class="gz-storage-bar">
+        <div class="gz-storage-fill {{ 'warn' if site.storage_pct > 80 else '' }}"
+             style="width:{{ site.storage_pct }}%"></div>
+      </div>
+      <div style="color:#aaaacc;font-size:0.75rem;margin-top:0.4rem;">{{ site.storage_pct }}% used</div>
+    </div>
+  </div>
+
+  {% if site.status == 'approved' %}
+  <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1rem;">
+    <a href="{{ url_for('editor.index') }}" class="gz-btn"><i class="bi bi-code-slash"></i> HTML Editor</a>
+    <a href="{{ url_for('sites.files') }}" class="gz-btn-ghost"><i class="bi bi-folder"></i> File Manager</a>
+    <a href="{{ url_for('sites.guestbook', site_name=site.name) }}" class="gz-btn-ghost"><i class="bi bi-book"></i> Guestbook</a>
+    <a href="{{ url_for('sites.settings') }}" class="gz-btn-ghost"><i class="bi bi-gear"></i> Settings</a>
+    <a href="{{ site.url_path }}" class="gz-btn-ghost" target="_blank"><i class="bi bi-box-arrow-up-right"></i> View Site</a>
+  </div>
+  {% elif site.status == 'pending' %}
+  <div class="gz-alert gz-alert-warning">⏳ Your site is awaiting admin approval.</div>
+  {% elif site.status == 'rejected' %}
+  <div class="gz-alert gz-alert-danger">❌ Your site application was rejected. {{ site.reject_reason or '' }}</div>
+  {% elif site.status == 'suspended' %}
+  <div class="gz-alert gz-alert-danger">🚫 Your site has been suspended. Contact admin.</div>
+  {% endif %}
+
+  <!-- Files list -->
+  {% if site.files %}
+  <div class="gz-card">
+    <div class="gz-card-title">📁 Files ({{ site.files|length }})</div>
+    <table class="gz-table">
+      <thead><tr><th>Filename</th><th>Size</th><th>Type</th></tr></thead>
+      <tbody>
+        {% for f in site.files %}
+        <tr>
+          <td style="color:#00ffff;">{{ f.filename }}</td>
+          <td style="color:#aaaacc;">{{ (f.size_bytes / 1024)|round(1) }} KB</td>
+          <td style="color:#aaaacc;">{{ f.mime_type or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

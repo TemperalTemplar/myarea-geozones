@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}404 — Page Not Found{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:3rem auto;text-align:center;padding:0 1rem;">
+  <div class="gz-card">
+    <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
+    <div class="gz-card-title">404 — Page Not Found</div>
+    <p style="color:#aaaacc;margin-bottom:1rem;">This page doesn't exist on {{ site.title }}.</p>
+    <a href="{{ site.url_path }}" class="gz-btn">GO TO HOMEPAGE</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Editor — {{ site.title }}{% endblock %}
+{% block content %}
+<div class="gz-editor-layout">
+  <!-- File sidebar -->
+  <div class="gz-file-sidebar">
+    <div style="color:#ffff00;font-size:0.75rem;font-family:'Courier New',monospace;padding:0.3rem 0.5rem;border-bottom:1px solid #333;margin-bottom:0.5rem;">
+      📁 FILES
+    </div>
+    <!-- New file form -->
+    <form method="POST" action="{{ url_for('editor.new_file') }}" style="margin-bottom:0.5rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="text" name="filename" placeholder="newfile.html"
+        style="background:#000033;border:1px solid #333;color:#00ff00;padding:0.2rem 0.4rem;font-size:0.72rem;width:100%;font-family:'Courier New',monospace;">
+      <button type="submit" style="background:#003300;border:1px solid #006600;color:#00ff00;padding:0.2rem;font-size:0.7rem;width:100%;cursor:pointer;margin-top:0.2rem;">+ New File</button>
+    </form>
+    {% for f in files %}
+    <a href="{{ url_for('editor.index', file=f.filename) }}"
+       class="gz-file-item {{ 'active' if f.filename == current_file else '' }}">
+      {{ f.filename }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Editor area -->
+  <div class="gz-editor-area">
+    <div class="gz-editor-toolbar">
+      <span style="color:#aaaacc;font-size:0.78rem;font-family:'Courier New',monospace;">{{ current_file }}</span>
+      <button id="save-btn" class="gz-btn" style="margin-left:auto;" onclick="saveFile()">💾 SAVE</button>
+      <a href="{{ site.url_path }}{{ current_file }}" target="_blank" class="gz-btn-ghost" style="font-size:0.78rem;">👁 Preview</a>
+      <a href="{{ url_for('sites.files') }}" class="gz-btn-ghost" style="font-size:0.78rem;">📁 Files</a>
+      <span id="save-status" style="color:#aaaacc;font-size:0.75rem;margin-left:0.5rem;"></span>
+    </div>
+    <textarea id="code-editor" spellcheck="false">{{ content }}</textarea>
+  </div>
+</div>
+
+<script>
+const filename = {{ current_file|tojson }};
+const csrfToken = document.querySelector('meta[name="csrf-token"]') ?
+  document.querySelector('meta[name="csrf-token"]').content : '{{ csrf_token() }}';
+
+function saveFile() {
+  const content = document.getElementById('code-editor').value;
+  const status  = document.getElementById('save-status');
+  const btn     = document.getElementById('save-btn');
+  btn.textContent = '⏳ Saving...';
+  fetch('{{ url_for("editor.save") }}', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
+    body: JSON.stringify({ filename, content })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) {
+      status.style.color = '#ff6666';
+      status.textContent = '✗ ' + data.error;
+    } else {
+      status.style.color = '#00ff00';
+      status.textContent = '✓ Saved (' + (data.size/1024).toFixed(1) + ' KB)';
+    }
+    btn.textContent = '💾 SAVE';
+    setTimeout(() => status.textContent = '', 3000);
+  })
+  .catch(() => {
+    status.style.color = '#ff6666';
+    status.textContent = '✗ Save failed';
+    btn.textContent = '💾 SAVE';
+  });
+}
+
+// Ctrl+S to save
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+});
+
+// Tab key inserts spaces
+document.getElementById('code-editor').addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const ta  = e.target;
+    const start = ta.selectionStart;
+    ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(ta.selectionEnd);
+    ta.selectionStart = ta.selectionEnd = start + 2;
+  }
+});
+</script>
+{% endblock %}

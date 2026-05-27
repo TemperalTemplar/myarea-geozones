@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Following — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:1.5rem;">📌 SITES I FOLLOW</h1>
+  {% for follow in follows %}
+  <div class="gz-card" style="margin-bottom:0.75rem;display:flex;align-items:center;gap:1rem;">
+    <div style="flex:1;">
+      <a href="{{ follow.site.url_path }}" style="color:#ffff00;font-weight:bold;">{{ follow.site.title }}</a>
+      <div style="color:#aaaacc;font-size:0.75rem;">{{ follow.site.neighborhood }} · Following since {{ follow.created_at.strftime('%b %d, %Y') }}</div>
+    </div>
+    <form method="POST" action="{{ url_for('social.follow', site_id=follow.site_id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="gz-btn-ghost" style="font-size:0.75rem;color:#ff6666;">Unfollow</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="gz-card" style="text-align:center;padding:2rem;">
+    <div style="color:#aaaacc;margin-bottom:1rem;">You're not following any sites yet.</div>
+    <a href="{{ url_for('main.neighborhoods') }}" class="gz-btn">EXPLORE NEIGHBORHOODS</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

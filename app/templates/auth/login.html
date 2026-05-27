@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Login — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:400px;margin:3rem auto;padding:0 1rem;">
+  <div class="gz-card">
+    <div class="gz-card-title">🔑 Login to GeoZones</div>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="gz-form-group">
+        <label class="gz-label">Username or Email</label>
+        <input type="text" name="identifier" class="gz-input" required autofocus>
+      </div>
+      <div class="gz-form-group">
+        <label class="gz-label">Password</label>
+        <input type="password" name="password" class="gz-input" required>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="color:#aaaacc;font-size:0.78rem;display:flex;align-items:center;gap:0.4rem;">
+          <input type="checkbox" name="remember"> Remember me
+        </label>
+      </div>
+      <button type="submit" class="gz-btn" style="width:100%;text-align:center;">LOGIN</button>
+    </form>
+    {% if config.get('OIDC_CLIENT_ID') %}
+    <div style="text-align:center;margin:1rem 0;color:#aaaacc;font-size:0.78rem;">— or —</div>
+    <a href="{{ url_for('auth.oidc_login') }}" class="gz-btn-ghost" style="width:100%;text-align:center;display:block;">
+      <i class="bi bi-shield-lock-fill"></i> Login with SSO
+    </a>
+    {% endif %}
+    <div style="text-align:center;margin-top:1rem;font-size:0.78rem;color:#aaaacc;">
+      New here? <a href="{{ url_for('auth.register') }}" style="color:#ffff00;">Get your free site!</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

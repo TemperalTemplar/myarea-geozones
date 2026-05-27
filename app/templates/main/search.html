@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Search — GeoZones{% endblock %}
+{% block content %}
+<div style="max-width:900px;margin:0 auto;padding:1.5rem 1rem;">
+  <h1 style="color:#ffff00;font-family:'Courier New',monospace;margin-bottom:1rem;">🔍 SEARCH SITES</h1>
+  <form method="GET" style="display:flex;gap:0.5rem;margin-bottom:1.5rem;">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search sites..." class="gz-input" style="flex:1;">
+    <select name="neighborhood" class="gz-input" style="width:180px;">
+      <option value="">All neighborhoods</option>
+      {% for hood in neighborhoods %}
+      <option value="{{ hood.slug }}" {{ 'selected' if hood.slug == hood else '' }}>{{ hood.icon }} {{ hood.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="gz-btn">SEARCH</button>
+  </form>
+  {% if results.items %}
+  <div class="gz-site-grid">
+    {% for site in results.items %}
+    <div class="gz-site-card">
+      <a href="{{ site.url_path }}">{{ site.title }}</a>
+      <div class="gz-site-meta">{{ site.neighborhood }} · {{ site.owner.username }}</div>
+      {% if site.description %}<div class="gz-site-meta" style="font-size:0.72rem;">{{ site.description[:80] }}</div>{% endif %}
+      <div class="gz-hit-count">👁 {{ site.hit_count }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% elif q %}
+  <p style="color:#aaaacc;">No results for "{{ q }}".</p>
+  {% endif %}
+</div>
+{% endblock %}
