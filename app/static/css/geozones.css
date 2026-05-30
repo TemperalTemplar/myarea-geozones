@@ -15,6 +15,34 @@
   --gz-font-sans: Arial, sans-serif;
 }
 
+
+[data-theme="dark"] {
+  --gz-bg:        #0d0d0d;
+  --gz-surface:   #141414;
+  --gz-surface-2: #1c1c1c;
+  --gz-border:    #252525;
+  --gz-text:      #e8e8e8;
+  --gz-text-muted:#888888;
+  --gz-yellow:    #ffff00;
+  --gz-cyan:      #00d4a0;
+  --gz-lime:      #00ff00;
+  --gz-pink:      #ff69b4;
+  --gz-orange:    #ff8c00;
+}
+
+[data-theme="high-contrast"] {
+  --gz-bg:        #000000;
+  --gz-surface:   #0a0a0a;
+  --gz-surface-2: #111111;
+  --gz-border:    #ffffff;
+  --gz-text:      #ffffff;
+  --gz-text-muted:#cccccc;
+  --gz-yellow:    #ffff00;
+  --gz-cyan:      #00ffff;
+  --gz-lime:      #00ff00;
+  --gz-pink:      #ff69b4;
+  --gz-orange:    #ffaa00;
+}
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
