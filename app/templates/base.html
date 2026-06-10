@@ -31,6 +31,7 @@
         <div style="display:inline-flex;align-items:center;gap:4px;margin-left:4px">
           <button onclick="toggleGZTheme()" id="gz-theme-btn" title="Toggle theme" style="background:transparent;border:1px solid var(--gz-border);border-radius:4px;width:32px;height:32px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--gz-text);font-size:14px">&#9790;</button>
           <button onclick="toggleGZContrast()" title="High contrast" style="background:transparent;border:1px solid var(--gz-border);border-radius:4px;padding:0 6px;height:32px;cursor:pointer;color:var(--gz-text);font-size:9px;letter-spacing:1px;font-family:inherit">HC</button>
+        <script>window.MA_USER = "{{ current_user.oidc_sub if current_user.is_authenticated else '' }}";</script>
         <script src="https://apps.wrds361.com/static/launcher.js"></script>
         </div>
         <a href="{{ url_for('auth.logout') }}" class="gz-nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>

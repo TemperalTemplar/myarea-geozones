@@ -69,6 +69,13 @@ def follow(site_id):
         )
         db.session.add(update)
         db.session.commit()
+        try:
+            from app.notify import notify_user
+            notify_user(site.user_id, "site_follow", "New follower",
+                f"{current_user.username} started following your site.",
+                f"https://geozones.wrds361.com/social/followers/{site.name}")
+        except Exception:
+            pass
         flash(f"Now following {site.title}!", "success")
 
     return redirect(request.referrer or url_for("social.feed"))
@@ -92,6 +99,14 @@ def like(site_id):
         like = SiteLike(user_id=current_user.id, site_id=site_id)
         db.session.add(like)
         db.session.commit()
+        try:
+            if site.user_id != current_user.id:
+                from app.notify import notify_user
+                notify_user(site.user_id, "site_like", "Someone liked your site",
+                    f"{current_user.username} liked {site.title}.",
+                    f"https://geozones.wrds361.com/sites/{site.name}")
+        except Exception:
+            pass
         return jsonify({"liked": True, "count": SiteLike.query.filter_by(site_id=site_id).count()})
 
 

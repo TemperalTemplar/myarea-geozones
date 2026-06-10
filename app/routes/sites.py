@@ -199,6 +199,17 @@ def guestbook(site_name):
             )
             db.session.add(entry)
             db.session.commit()
+            try:
+                from flask_login import current_user as _cu
+                signer_is_owner = (_cu.is_authenticated and _cu.id == site.user_id)
+                if not signer_is_owner:
+                    from app.notify import notify_user
+                    notify_user(site.user_id, "guestbook_signed",
+                        "New guestbook signature",
+                        f'{author_name} signed your guestbook on {site.name}.',
+                        f"https://geozones.wrds361.com/sites/{site.name}/guestbook")
+            except Exception:
+                pass
             flash("Thanks for signing the guestbook!", "success")
         return redirect(url_for("sites.guestbook", site_name=site_name))
 
